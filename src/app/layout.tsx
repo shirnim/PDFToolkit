@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'PDF Summarizer',
-  description: 'Upload a PDF and get a concise summary in seconds.',
+  title: 'PDF Toolkit',
+  description: 'All-in-one toolkit for your PDF needs.',
 };
 
 export default function RootLayout({
