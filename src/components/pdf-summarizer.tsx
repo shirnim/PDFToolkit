@@ -123,14 +123,14 @@ export default function PdfSummarizer() {
   return (
     <Card className="w-full max-w-2xl shadow-lg rounded-lg">
       <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">AI-Powered PDF Summarizer</CardTitle>
+        <CardTitle className="text-3xl font-bold tracking-tight">Summarize your PDF</CardTitle>
         <CardDescription className="text-md text-muted-foreground pt-1">
-          Upload a PDF and get a concise summary. Free, secure, and instant.
+          Upload a document and our AI will provide a concise summary.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 md:px-6">
         <div 
-          className="relative flex flex-col items-center justify-center space-y-4 rounded-lg border-2 border-dashed border-border p-8 transition-all duration-300 hover:border-primary/80 hover:bg-accent"
+          className="relative flex flex-col items-center justify-center space-y-4 rounded-lg border-2 border-dashed border-border p-8 transition-all duration-300 hover:border-primary/50 hover:bg-accent"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={triggerFileSelect}
