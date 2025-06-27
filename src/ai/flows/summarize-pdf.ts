@@ -52,6 +52,9 @@ const summarizePdfFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("The AI model did not return a valid summary. The PDF may be unreadable or empty.");
+    }
+    return output;
   }
 );

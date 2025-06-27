@@ -57,12 +57,9 @@ export default function PdfSummarizer() {
           setSummary(result.summary);
         } catch (aiError: any) {
           console.error("AI Summarization Error:", aiError);
-          const description = aiError.message?.includes("API Key is not configured")
-            ? "AI features are not configured. Please set the GOOGLE_API_KEY in your .env file."
-            : "The PDF might be invalid, empty, or password-protected.";
           toast({
             title: "Summarization Failed",
-            description,
+            description: aiError.message || "An unexpected error occurred.",
             variant: "destructive",
           });
           handleClear();

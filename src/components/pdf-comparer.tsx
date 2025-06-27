@@ -143,12 +143,9 @@ export default function PdfComparer() {
 
     } catch (error: any) {
       console.error("Comparison Error:", error);
-      const description = error.message?.includes("API Key is not configured")
-        ? "AI features are not configured. Please set the GOOGLE_API_KEY in your .env file."
-        : "An error occurred during comparison. Please check the files and try again.";
       toast({
         title: "Comparison Failed",
-        description,
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
       handleClearAll();

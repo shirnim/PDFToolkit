@@ -56,6 +56,9 @@ const comparePdfsFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
+    }
+    return output;
   }
 );
