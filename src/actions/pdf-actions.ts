@@ -53,24 +53,15 @@ export async function splitPdfAction(
       return { error: 'PDF has only one page, no splitting needed.' };
     }
 
+    const zip = new JSZip();
     const pageIndices = pdfDoc.getPageIndices();
 
-    const generatedPdfs = await Promise.all(
-      pageIndices.map(async (pageIndex) => {
-        const subDoc = await PDFDocument.create();
-        const [copiedPage] = await subDoc.copyPages(pdfDoc, [pageIndex]);
-        subDoc.addPage(copiedPage);
-        const newPdfBytes = await subDoc.save();
-        return {
-          pageNumber: pageIndex + 1,
-          bytes: newPdfBytes,
-        };
-      })
-    );
-
-    const zip = new JSZip();
-    for (const pdf of generatedPdfs) {
-      zip.file(`page_${pdf.pageNumber}.pdf`, pdf.bytes);
+    for (const pageIndex of pageIndices) {
+      const subDoc = await PDFDocument.create();
+      const [copiedPage] = await subDoc.copyPages(pdfDoc, [pageIndex]);
+      subDoc.addPage(copiedPage);
+      const newPdfBytes = await subDoc.save();
+      zip.file(`page_${pageIndex + 1}.pdf`, newPdfBytes);
     }
     
     const zipBytes = await zip.generateAsync({ type: 'nodebuffer' });
