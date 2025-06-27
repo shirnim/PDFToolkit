@@ -63,7 +63,7 @@ export default function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading || isAuthDisabled}
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -74,10 +74,10 @@ export default function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading || isAuthDisabled}
+              disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading || isAuthDisabled}>
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Login
           </Button>
