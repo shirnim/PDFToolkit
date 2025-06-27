@@ -30,6 +30,9 @@ const ComparePdfsOutputSchema = z.object({
 export type ComparePdfsOutput = z.infer<typeof ComparePdfsOutputSchema>;
 
 export async function comparePdfs(input: ComparePdfsInput): Promise<ComparePdfsOutput> {
+  if (!process.env.GOOGLE_API_KEY) {
+    throw new Error("Google AI API Key is not configured. Please set the GOOGLE_API_KEY in your .env file.");
+  }
   return comparePdfsFlow(input);
 }
 

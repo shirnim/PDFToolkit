@@ -141,11 +141,14 @@ export default function PdfComparer() {
       const result = await comparePdfs({ pdfDataUri1, pdfDataUri2 });
       setComparison(result.comparison);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Comparison Error:", error);
+      const description = error.message?.includes("API Key is not configured")
+        ? "AI features are not configured. Please set the GOOGLE_API_KEY in your .env file."
+        : "An error occurred during comparison. Please check the files and try again.";
       toast({
         title: "Comparison Failed",
-        description: "An error occurred during comparison. Please check the files and try again.",
+        description,
         variant: "destructive",
       });
       handleClearAll();

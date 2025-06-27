@@ -27,6 +27,9 @@ const SummarizePdfOutputSchema = z.object({
 export type SummarizePdfOutput = z.infer<typeof SummarizePdfOutputSchema>;
 
 export async function summarizePdf(input: SummarizePdfInput): Promise<SummarizePdfOutput> {
+  if (!process.env.GOOGLE_API_KEY) {
+    throw new Error("Google AI API Key is not configured. Please set the GOOGLE_API_KEY in your .env file.");
+  }
   return summarizePdfFlow(input);
 }
 
