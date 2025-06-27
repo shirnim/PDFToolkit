@@ -26,15 +26,19 @@ const SummarizePdfOutputSchema = z.object({
 export type SummarizePdfOutput = z.infer<typeof SummarizePdfOutputSchema>;
 
 export async function summarizePdf(input: SummarizePdfInput): Promise<SummarizePdfOutput> {
-  if (!process.env.GOOGLE_API_KEY) {
-    throw new Error("Google AI API Key is not configured. Please set the GOOGLE_API_KEY in your .env file.");
-  }
   try {
-    return await summarizePdfFlow(input);
+    if (!process.env.GOOGLE_API_KEY) {
+      throw new Error('The GOOGLE_API_KEY is not set. Please add it to your .env file.');
+    }
+    const result = await summarizePdfFlow(input);
+    if (!result.summary) {
+        throw new Error("The AI model returned an empty summary. The document might be incompatible.");
+    }
+    return result;
   } catch (e: any) {
-    console.error('Top-level error in summarizePdf:', e);
-    // Re-throw a generic but informative error to the client.
-    throw new Error(`An unexpected server error occurred during summarization. Please try again. Details: ${e.message}`);
+    console.error('Error in summarizePdf server action:', e);
+    // Re-throw the error with a clear message for the client.
+    throw new Error(`An error occurred during summarization: ${e.message}`);
   }
 }
 
@@ -57,15 +61,10 @@ const summarizePdfFlow = ai.defineFlow(
     outputSchema: SummarizePdfOutputSchema,
   },
   async (input) => {
-    try {
-      const { output } = await prompt(input);
-      if (!output) {
-        throw new Error('The AI model did not return a valid summary. The PDF may be unreadable or empty.');
-      }
-      return output;
-    } catch (e: any) {
-      console.error('Error in summarizePdfFlow:', e);
-      throw new Error(`Summarization failed. The document might be corrupted, password-protected, or contain incompatible content. Details: ${e.message}`);
+    const { output } = await prompt(input);
+    if (!output) {
+      throw new Error('The AI model did not return a valid summary. The PDF may be unreadable or empty.');
     }
+    return output;
   }
 );

@@ -30,15 +30,19 @@ const ComparePdfsOutputSchema = z.object({
 export type ComparePdfsOutput = z.infer<typeof ComparePdfsOutputSchema>;
 
 export async function comparePdfs(input: ComparePdfsInput): Promise<ComparePdfsOutput> {
-  if (!process.env.GOOGLE_API_KEY) {
-    throw new Error("Google AI API Key is not configured. Please set the GOOGLE_API_KEY in your .env file.");
-  }
   try {
-    return await comparePdfsFlow(input);
+    if (!process.env.GOOGLE_API_KEY) {
+      throw new Error('The GOOGLE_API_KEY is not set. Please add it to your .env file.');
+    }
+    const result = await comparePdfsFlow(input);
+    if (!result.comparison) {
+      throw new Error('The AI model returned an empty comparison. The documents might be incompatible.');
+    }
+    return result;
   } catch (e: any) {
-    console.error('Top-level error in comparePdfs:', e);
-    // Re-throw a generic but informative error to the client.
-    throw new Error(`An unexpected server error occurred during comparison. Please try again. Details: ${e.message}`);
+    console.error('Error in comparePdfs server action:', e);
+    // Re-throw the error with a clear message for the client.
+    throw new Error(`An error occurred during comparison: ${e.message}`);
   }
 }
 
@@ -62,15 +66,10 @@ const comparePdfsFlow = ai.defineFlow(
     outputSchema: ComparePdfsOutputSchema,
   },
   async (input) => {
-    try {
-      const { output } = await prompt(input);
-      if (!output) {
-        throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
-      }
-      return output;
-    } catch (e: any) {
-      console.error('Error in comparePdfsFlow:', e);
-      throw new Error(`Comparison failed. One or more documents might be corrupted, password-protected, or contain incompatible content. Details: ${e.message}`);
+    const { output } = await prompt(input);
+    if (!output) {
+      throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
     }
+    return output;
   }
 );
