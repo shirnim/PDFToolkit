@@ -19,7 +19,7 @@ import {
   Download,
   Trash2,
 } from 'lucide-react';
-import { mergePdfsAction } from '@/actions/merge-pdf-action';
+import { mergePdfs } from '@/ai/flows/merge-pdf';
 
 export default function PdfMerger() {
   const [files, setFiles] = useState<File[]>([]);
@@ -41,11 +41,11 @@ export default function PdfMerger() {
         });
         return false;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit per file
+      if (file.size > 25 * 1024 * 1024) {
+        // 25MB limit per file
         toast({
           title: 'File Too Large',
-          description: `${file.name} is larger than 10MB.`,
+          description: `${file.name} is larger than 25MB.`,
           variant: 'destructive',
         });
         return false;
@@ -88,7 +88,7 @@ export default function PdfMerger() {
       formData.append('files', file);
     });
 
-    const result = await mergePdfsAction(formData);
+    const result = await mergePdfs(formData);
 
     if (result.error) {
       toast({
@@ -143,7 +143,7 @@ export default function PdfMerger() {
             <p className="mt-4 font-semibold text-foreground">
               Click to upload or <span className="text-primary">drag and drop</span>
             </p>
-            <p className="text-sm">PDFs only, up to 10MB each</p>
+            <p className="text-sm">PDFs only, up to 25MB each</p>
           </div>
         </div>
 

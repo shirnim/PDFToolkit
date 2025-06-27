@@ -18,7 +18,7 @@ import {
   Scissors,
   FileArchive,
 } from 'lucide-react';
-import { splitPdfAction } from '@/actions/split-pdf-action';
+import { splitPdf } from '@/ai/flows/split-pdf';
 
 export default function PdfSplitter() {
   const [file, setFile] = useState<File | null>(null);
@@ -71,7 +71,7 @@ export default function PdfSplitter() {
     formData.append('file', file);
 
     try {
-      const result = await splitPdfAction(formData);
+      const result = await splitPdf(formData);
 
       if (result.error) {
         toast({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { summarizePdf } from "@/actions/summarize-pdf-action";
+import { summarizePdf } from "@/ai/flows/summarize-pdf";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
