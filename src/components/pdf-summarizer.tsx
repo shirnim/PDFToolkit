@@ -29,10 +29,10 @@ export default function PdfSummarizer() {
       return;
     }
     
-    if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+    if (selectedFile.size > 10 * 1024 * 1024) { // 10MB limit
       toast({
         title: "File Too Large",
-        description: "Please upload a file smaller than 5MB.",
+        description: "Please upload a file smaller than 10MB.",
         variant: "destructive",
       });
       return;
@@ -153,7 +153,7 @@ export default function PdfSummarizer() {
             <div className="text-center cursor-pointer space-y-2 text-muted-foreground">
               <Upload className="mx-auto h-12 w-12" />
               <p className="mt-4 font-semibold text-foreground">Click to upload or <span className="text-primary">drag and drop</span></p>
-              <p className="text-sm">PDF only, up to 5MB</p>
+              <p className="text-sm">PDF only, up to 10MB</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center">

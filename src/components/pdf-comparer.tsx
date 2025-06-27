@@ -60,7 +60,7 @@ function FileUploader({
         <div className="text-center text-muted-foreground">
           <Upload className="mx-auto h-10 w-10" />
           <p className="mt-2 text-sm font-semibold text-foreground">Click or drag & drop</p>
-          <p className="text-xs mt-1">PDF up to 5MB</p>
+          <p className="text-xs mt-1">PDF up to 10MB</p>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center text-center">
@@ -99,10 +99,10 @@ export default function PdfComparer() {
       return;
     }
     
-    if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+    if (selectedFile.size > 10 * 1024 * 1024) { // 10MB limit
       toast({
         title: "File Too Large",
-        description: "Please upload a file smaller than 5MB.",
+        description: "Please upload a file smaller than 10MB.",
         variant: "destructive",
       });
       return;
