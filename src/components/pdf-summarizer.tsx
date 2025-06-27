@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { summarizePdf } from "@/ai/flows/summarize-pdf";
+import { summarizePdf } from "@/actions/summarize-pdf-action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,15 +42,11 @@ export default function PdfSummarizer() {
     setSummary(null);
   };
 
-  const fileToDataUri = (file: File): Promise<string> => {
+  const fileToDataUri = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        resolve(e.target?.result as string);
-      };
-      reader.onerror = () => {
-        reject(new Error("There was an error reading your file."));
-      };
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = (e) => reject(new Error("File reading failed"));
       reader.readAsDataURL(file);
     });
   };
@@ -72,7 +68,6 @@ export default function PdfSummarizer() {
         description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
-      handleClear();
     } finally {
       setIsLoading(false);
     }

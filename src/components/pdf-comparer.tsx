@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { comparePdfs } from "@/ai/flows/compare-pdfs";
+import { comparePdfs } from "@/actions/compare-pdfs-action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
