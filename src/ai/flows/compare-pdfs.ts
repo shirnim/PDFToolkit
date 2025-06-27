@@ -33,7 +33,13 @@ export async function comparePdfs(input: ComparePdfsInput): Promise<ComparePdfsO
   if (!process.env.GOOGLE_API_KEY) {
     throw new Error("Google AI API Key is not configured. Please set the GOOGLE_API_KEY in your .env file.");
   }
-  return comparePdfsFlow(input);
+  try {
+    return await comparePdfsFlow(input);
+  } catch (e: any) {
+    console.error('Top-level error in comparePdfs:', e);
+    // Re-throw a generic but informative error to the client.
+    throw new Error(`An unexpected server error occurred during comparison. Please try again. Details: ${e.message}`);
+  }
 }
 
 const prompt = ai.definePrompt({
