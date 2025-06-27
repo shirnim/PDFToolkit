@@ -25,7 +25,7 @@ export default function SignupForm() {
     if (isAuthDisabled) {
       toast({
         title: 'Authentication Not Configured',
-        description: "The application's Firebase credentials are not set up.",
+        description: "Please set up your Firebase credentials in the .env file to enable this feature.",
         variant: 'destructive',
       });
       return;
