@@ -1,6 +1,6 @@
 import Header from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FileText, GitCompareArrows } from "lucide-react";
+import { FileText, GitCompareArrows, Combine, Scissors } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -16,6 +16,18 @@ export default function Home() {
       icon: <GitCompareArrows className="h-10 w-10" />,
       title: "Compare PDFs",
       description: "Compare two PDF documents to find the differences.",
+    },
+    {
+      href: "/merge",
+      icon: <Combine className="h-10 w-10" />,
+      title: "Merge PDF",
+      description: "Combine multiple PDFs into a single document.",
+    },
+    {
+      href: "/split",
+      icon: <Scissors className="h-10 w-10" />,
+      title: "Split PDF",
+      description: "Extract pages from a PDF or split it into multiple files.",
     },
   ];
 
