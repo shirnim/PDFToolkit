@@ -29,9 +29,9 @@ export async function mergePdfsAction(
     ).toString('base64')}`;
 
     return { data: mergedPdfDataUri };
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
-    return { error: 'Failed to merge PDFs. The file might be corrupted or password-protected.' };
+    return { error: e.message || 'Failed to merge PDFs. The file might be corrupted or password-protected.' };
   }
 }
 
@@ -53,34 +53,37 @@ export async function splitPdfAction(
       return { error: 'PDF has only one page, no splitting needed.' };
     }
 
-    const zip = new JSZip();
     const pageIndices = pdfDoc.getPageIndices();
 
-    await Promise.all(
+    const generatedPdfs = await Promise.all(
       pageIndices.map(async (pageIndex) => {
-        // Create a new document for each page
         const subDoc = await PDFDocument.create();
-        // Copy the page from the original document to the new one
         const [copiedPage] = await subDoc.copyPages(pdfDoc, [pageIndex]);
         subDoc.addPage(copiedPage);
-        // Save the new document to bytes
         const newPdfBytes = await subDoc.save();
-        // Add the new PDF to the zip file
-        zip.file(`page_${pageIndex + 1}.pdf`, newPdfBytes);
+        return {
+          pageNumber: pageIndex + 1,
+          bytes: newPdfBytes,
+        };
       })
     );
 
+    const zip = new JSZip();
+    for (const pdf of generatedPdfs) {
+      zip.file(`page_${pdf.pageNumber}.pdf`, pdf.bytes);
+    }
+    
     const zipBytes = await zip.generateAsync({ type: 'nodebuffer' });
     const zipDataUri = `data:application/zip;base64,${zipBytes.toString(
       'base64'
     )}`;
 
     return { data: zipDataUri };
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
     return {
       error:
-        'Failed to split PDF. The file might be corrupted or password-protected.',
+        e.message || 'Failed to split PDF. The file might be corrupted or password-protected.',
     };
   }
 }
