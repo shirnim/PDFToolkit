@@ -18,14 +18,11 @@ import {
   Scissors,
   FileArchive,
 } from 'lucide-react';
-import { PDFDocument } from 'pdf-lib';
-import JSZip from 'jszip';
-import { Progress } from '@/components/ui/progress';
+import { splitPdfAction } from '@/actions/split-pdf-action';
 
 export default function PdfSplitter() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [splitPdfZipUri, setSplitPdfZipUri] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -59,7 +56,6 @@ export default function PdfSplitter() {
   const handleClear = () => {
     setFile(null);
     setSplitPdfZipUri(null);
-    setProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -70,53 +66,32 @@ export default function PdfSplitter() {
 
     setIsLoading(true);
     setSplitPdfZipUri(null);
-    setProgress(0);
+
+    const formData = new FormData();
+    formData.append('file', file);
 
     try {
-      const pdfBytes = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(pdfBytes);
-      const pageCount = pdfDoc.getPageCount();
+      const result = await splitPdfAction(formData);
 
-      if (pageCount <= 1) {
+      if (result.error) {
         toast({
-          title: 'PDF has only one page',
-          description: 'No splitting needed.',
+          title: 'Split Failed',
+          description: result.error,
           variant: 'destructive',
         });
-        setIsLoading(false);
-        return;
+      } else if (result.data) {
+        setSplitPdfZipUri(result.data);
+        toast({
+          title: 'Split Successful',
+          description: 'Your PDF has been split into individual pages.',
+        });
       }
-
-      const zip = new JSZip();
-      const pageIndices = pdfDoc.getPageIndices();
-
-      for (let i = 0; i < pageCount; i++) {
-        const pageIndex = pageIndices[i];
-        const subDoc = await PDFDocument.create();
-        const [copiedPage] = await subDoc.copyPages(pdfDoc, [pageIndex]);
-        subDoc.addPage(copiedPage);
-        const newPdfBytes = await subDoc.save();
-        zip.file(`page_${pageIndex + 1}.pdf`, newPdfBytes);
-        setProgress(((i + 1) / pageCount) * 100);
-      }
-
-      const zipBytes = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipDataUri = `data:application/zip;base64,${Buffer.from(
-        zipBytes
-      ).toString('base64')}`;
-
-      setSplitPdfZipUri(zipDataUri);
-      toast({
-        title: 'Split Successful',
-        description: 'Your PDF has been split into individual pages.',
-      });
     } catch (e: any) {
       console.error(e);
       toast({
         title: 'Split Failed',
         description:
-          e.message ||
-          'Failed to split PDF. The file might be corrupted or password-protected.',
+          e.message || 'An unexpected error occurred while splitting the PDF.',
         variant: 'destructive',
       });
     } finally {
@@ -196,7 +171,7 @@ export default function PdfSplitter() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Splitting... ({Math.round(progress)}%)
+              Splitting...
             </>
           ) : (
             <>
@@ -205,9 +180,6 @@ export default function PdfSplitter() {
             </>
           )}
         </Button>
-        {isLoading && (
-          <Progress value={progress} className="w-full" />
-        )}
         {splitPdfZipUri && !isLoading && (
           <Button
             asChild

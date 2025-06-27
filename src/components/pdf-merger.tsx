@@ -19,7 +19,7 @@ import {
   Download,
   Trash2,
 } from 'lucide-react';
-import { mergePdfsAction } from '@/actions/pdf-actions';
+import { mergePdfsAction } from '@/actions/merge-pdf-action';
 
 export default function PdfMerger() {
   const [files, setFiles] = useState<File[]>([]);
