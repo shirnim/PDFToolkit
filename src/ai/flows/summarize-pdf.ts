@@ -1,4 +1,3 @@
-// src/ai/flows/summarize-pdf.ts
 'use server';
 
 /**
@@ -37,6 +36,7 @@ const prompt = ai.definePrompt({
   name: 'summarizePdfPrompt',
   input: {schema: SummarizePdfInputSchema},
   output: {schema: SummarizePdfOutputSchema},
+  model: 'gemini-1.5-flash',
   prompt: `You are an expert summarizer, skilled at condensing large documents into concise summaries.
 
   Please summarize the following PDF document, extracting the key points and main ideas.
