@@ -16,14 +16,16 @@ import {
   X,
   Loader2,
   Scissors,
-  Download,
   FileArchive,
 } from 'lucide-react';
-import { splitPdfAction } from '@/actions/pdf-actions';
+import { PDFDocument } from 'pdf-lib';
+import JSZip from 'jszip';
+import { Progress } from '@/components/ui/progress';
 
 export default function PdfSplitter() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [splitPdfZipUri, setSplitPdfZipUri] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -41,11 +43,10 @@ export default function PdfSplitter() {
       return;
     }
 
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      // 10MB limit
+    if (selectedFile.size > 25 * 1024 * 1024) {
       toast({
         title: 'File Too Large',
-        description: 'Please upload a file smaller than 10MB.',
+        description: 'Please upload a file smaller than 25MB.',
         variant: 'destructive',
       });
       return;
@@ -58,6 +59,7 @@ export default function PdfSplitter() {
   const handleClear = () => {
     setFile(null);
     setSplitPdfZipUri(null);
+    setProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -68,27 +70,58 @@ export default function PdfSplitter() {
 
     setIsLoading(true);
     setSplitPdfZipUri(null);
+    setProgress(0);
 
-    const formData = new FormData();
-    formData.append('file', file);
+    try {
+      const pdfBytes = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+      const pageCount = pdfDoc.getPageCount();
 
-    const result = await splitPdfAction(formData);
+      if (pageCount <= 1) {
+        toast({
+          title: 'PDF has only one page',
+          description: 'No splitting needed.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
 
-    if (result.error) {
-      toast({
-        title: 'Split Failed',
-        description: result.error,
-        variant: 'destructive',
-      });
-    } else if (result.data) {
-      setSplitPdfZipUri(result.data);
+      const zip = new JSZip();
+      const pageIndices = pdfDoc.getPageIndices();
+
+      for (let i = 0; i < pageCount; i++) {
+        const pageIndex = pageIndices[i];
+        const subDoc = await PDFDocument.create();
+        const [copiedPage] = await subDoc.copyPages(pdfDoc, [pageIndex]);
+        subDoc.addPage(copiedPage);
+        const newPdfBytes = await subDoc.save();
+        zip.file(`page_${pageIndex + 1}.pdf`, newPdfBytes);
+        setProgress(((i + 1) / pageCount) * 100);
+      }
+
+      const zipBytes = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipDataUri = `data:application/zip;base64,${Buffer.from(
+        zipBytes
+      ).toString('base64')}`;
+
+      setSplitPdfZipUri(zipDataUri);
       toast({
         title: 'Split Successful',
         description: 'Your PDF has been split into individual pages.',
       });
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        title: 'Split Failed',
+        description:
+          e.message ||
+          'Failed to split PDF. The file might be corrupted or password-protected.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const triggerFileSelect = () => !isLoading && fileInputRef.current?.click();
@@ -128,7 +161,7 @@ export default function PdfSplitter() {
                 Click to upload or{' '}
                 <span className="text-primary">drag and drop</span>
               </p>
-              <p className="text-sm">PDF only, up to 10MB</p>
+              <p className="text-sm">PDF only, up to 25MB</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center">
@@ -163,7 +196,7 @@ export default function PdfSplitter() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Splitting...
+              Splitting... ({Math.round(progress)}%)
             </>
           ) : (
             <>
@@ -172,7 +205,10 @@ export default function PdfSplitter() {
             </>
           )}
         </Button>
-        {splitPdfZipUri && (
+        {isLoading && (
+          <Progress value={progress} className="w-full" />
+        )}
+        {splitPdfZipUri && !isLoading && (
           <Button
             asChild
             className="w-full py-6 text-lg"
