@@ -50,11 +50,16 @@ const summarizePdfFlow = ai.defineFlow(
     inputSchema: SummarizePdfInputSchema,
     outputSchema: SummarizePdfOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("The AI model did not return a valid summary. The PDF may be unreadable or empty.");
+  async (input) => {
+    try {
+      const { output } = await prompt(input);
+      if (!output) {
+        throw new Error('The AI model did not return a valid summary. The PDF may be unreadable or empty.');
+      }
+      return output;
+    } catch (e: any) {
+      console.error('Error in summarizePdfFlow:', e);
+      throw new Error(`Summarization failed. The document might be corrupted, password-protected, or contain incompatible content. Details: ${e.message}`);
     }
-    return output;
   }
 );

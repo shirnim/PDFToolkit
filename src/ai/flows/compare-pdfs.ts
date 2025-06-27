@@ -55,11 +55,16 @@ const comparePdfsFlow = ai.defineFlow(
     inputSchema: ComparePdfsInputSchema,
     outputSchema: ComparePdfsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
+  async (input) => {
+    try {
+      const { output } = await prompt(input);
+      if (!output) {
+        throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
+      }
+      return output;
+    } catch (e: any) {
+      console.error('Error in comparePdfsFlow:', e);
+      throw new Error(`Comparison failed. One or more documents might be corrupted, password-protected, or contain incompatible content. Details: ${e.message}`);
     }
-    return output;
   }
 );
