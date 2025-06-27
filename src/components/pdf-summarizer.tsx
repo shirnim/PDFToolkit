@@ -29,10 +29,10 @@ export default function PdfSummarizer() {
       return;
     }
     
-    if (selectedFile.size > 10 * 1024 * 1024) { // 10MB limit
+    if (selectedFile.size > 25 * 1024 * 1024) { // 25MB limit
       toast({
         title: "File Too Large",
-        description: "Please upload a file smaller than 10MB.",
+        description: "Please upload a file smaller than 25MB.",
         variant: "destructive",
       });
       return;
@@ -42,6 +42,19 @@ export default function PdfSummarizer() {
     setSummary(null);
   };
 
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(e.target?.result as string);
+      };
+      reader.onerror = () => {
+        reject(new Error("There was an error reading your file."));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSummarize = async () => {
     if (!file) return;
 
@@ -49,44 +62,19 @@ export default function PdfSummarizer() {
     setSummary(null);
 
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const pdfDataUri = e.target?.result as string;
-        try {
-          const result = await summarizePdf({ pdfDataUri });
-          setSummary(result.summary);
-        } catch (aiError: any) {
-          console.error("AI Summarization Error:", aiError);
-          toast({
-            title: "Summarization Failed",
-            description: aiError.message || "An unexpected error occurred.",
-            variant: "destructive",
-          });
-          handleClear();
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      reader.onerror = () => {
-        console.error("File Reader Error");
-        toast({
-          title: "File Read Error",
-          description: "There was an error reading your file.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        handleClear();
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Error setting up file reader:", error);
+      const pdfDataUri = await fileToDataUri(file);
+      const result = await summarizePdf({ pdfDataUri });
+      setSummary(result.summary);
+    } catch (error: any) {
+      console.error("Summarization Error:", error);
       toast({
-        title: "An Unexpected Error Occurred",
-        description: "Please try again.",
+        title: "Summarization Failed",
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
-      setIsLoading(false);
       handleClear();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -153,7 +141,7 @@ export default function PdfSummarizer() {
             <div className="text-center cursor-pointer space-y-2 text-muted-foreground">
               <Upload className="mx-auto h-12 w-12" />
               <p className="mt-4 font-semibold text-foreground">Click to upload or <span className="text-primary">drag and drop</span></p>
-              <p className="text-sm">PDF only, up to 10MB</p>
+              <p className="text-sm">PDF only, up to 25MB</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center">
