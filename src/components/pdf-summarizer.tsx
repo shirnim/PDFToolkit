@@ -121,16 +121,21 @@ export default function PdfSummarizer() {
   };
 
   return (
-    <Card className="w-full max-w-2xl shadow-lg rounded-lg">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">Summarize your PDF</CardTitle>
-        <CardDescription className="text-md text-muted-foreground pt-1">
-          Upload a document and our AI will provide a concise summary.
-        </CardDescription>
+    <Card className="w-full max-w-2xl shadow-xl rounded-xl">
+      <CardHeader className="items-center space-y-4 text-center">
+        <div className="rounded-full bg-primary/10 p-4 text-primary">
+            <Wand2 className="h-8 w-8" />
+        </div>
+        <div className="space-y-1">
+            <CardTitle className="text-3xl font-bold tracking-tight">Summarize your PDF</CardTitle>
+            <CardDescription className="text-md text-muted-foreground pt-1">
+            Upload a document and our AI will provide a concise summary.
+            </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4 px-4 md:px-6">
         <div 
-          className="relative flex flex-col items-center justify-center space-y-4 rounded-lg border-2 border-dashed border-border p-8 transition-all duration-300 hover:border-primary/50 hover:bg-accent"
+          className="relative flex flex-col items-center justify-center space-y-4 rounded-xl border-2 border-dashed border-muted bg-accent/50 p-8 transition-all duration-300 hover:border-primary/60 hover:bg-accent"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={triggerFileSelect}
@@ -145,19 +150,19 @@ export default function PdfSummarizer() {
             disabled={isLoading}
           />
           {!file ? (
-            <div className="text-center cursor-pointer">
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 font-semibold text-foreground">Click to upload or drag and drop</p>
-              <p className="text-xs text-muted-foreground mt-1">PDF only, up to 5MB</p>
+            <div className="text-center cursor-pointer space-y-2 text-muted-foreground">
+              <Upload className="mx-auto h-12 w-12" />
+              <p className="mt-4 font-semibold text-foreground">Click to upload or <span className="text-primary">drag and drop</span></p>
+              <p className="text-sm">PDF only, up to 5MB</p>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center cursor-pointer">
+            <div className="flex flex-col items-center justify-center text-center">
               <FileText className="h-12 w-12 text-primary" />
               <p className="mt-4 font-medium text-foreground truncate max-w-xs">{file.name}</p>
               <p className="text-xs text-muted-foreground mt-1">
                 ({(file.size / 1024 / 1024).toFixed(2)} MB)
               </p>
-              <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); handleClear(); }} className="text-destructive hover:text-destructive h-auto p-1 mt-2 z-10">
+              <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleClear(); }} className="text-destructive hover:text-destructive h-auto p-1 mt-2 z-10">
                 <X className="mr-1 h-4 w-4" /> Remove File
               </Button>
             </div>
@@ -200,7 +205,7 @@ export default function PdfSummarizer() {
                 <Textarea
                   value={summary || ""}
                   readOnly
-                  className="h-64 resize-none bg-secondary/50 focus-visible:ring-primary/50"
+                  className="h-64 resize-none rounded-md border border-border bg-muted/30 focus-visible:ring-primary/50"
                   aria-label="PDF Summary"
                 />
             )}

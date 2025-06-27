@@ -41,7 +41,7 @@ function FileUploader({
 
   return (
     <div
-      className="relative flex cursor-pointer flex-col items-center justify-center space-y-2 rounded-lg border-2 border-dashed border-border p-6 transition-all duration-300 hover:border-primary/50 hover:bg-accent"
+      className="relative flex cursor-pointer flex-col items-center justify-center space-y-2 rounded-xl border-2 border-dashed border-muted bg-accent/50 p-6 transition-all duration-300 hover:border-primary/60 hover:bg-accent"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
       onClick={triggerFileSelect}
@@ -57,10 +57,10 @@ function FileUploader({
       />
       <h4 className="font-semibold text-foreground">{title}</h4>
       {!file ? (
-        <div className="text-center">
-          <Upload className="mx-auto h-10 w-10 text-muted-foreground" />
+        <div className="text-center text-muted-foreground">
+          <Upload className="mx-auto h-10 w-10" />
           <p className="mt-2 text-sm font-semibold text-foreground">Click or drag & drop</p>
-          <p className="text-xs text-muted-foreground mt-1">PDF up to 5MB</p>
+          <p className="text-xs mt-1">PDF up to 5MB</p>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center text-center">
@@ -69,7 +69,7 @@ function FileUploader({
           <p className="text-xs text-muted-foreground mt-1">
             ({(file.size / 1024 / 1024).toFixed(2)} MB)
           </p>
-          <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); onClear(); }} className="z-10 mt-1 h-auto p-1 text-destructive hover:text-destructive">
+          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onClear(); }} className="z-10 mt-1 h-auto p-1 text-destructive hover:text-destructive">
             <X className="mr-1 h-3 w-3" /> Remove
           </Button>
         </div>
@@ -176,12 +176,17 @@ export default function PdfComparer() {
   };
 
   return (
-    <Card className="w-full rounded-lg shadow-lg">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">Compare Two PDFs</CardTitle>
-        <CardDescription className="pt-1 text-md text-muted-foreground">
-          Upload two documents and our AI will highlight the differences.
-        </CardDescription>
+    <Card className="w-full rounded-xl shadow-xl">
+      <CardHeader className="items-center space-y-4 text-center">
+        <div className="rounded-full bg-primary/10 p-4 text-primary">
+            <GitCompareArrows className="h-8 w-8" />
+        </div>
+        <div className="space-y-1">
+            <CardTitle className="text-3xl font-bold tracking-tight">Compare Two PDFs</CardTitle>
+            <CardDescription className="pt-1 text-md text-muted-foreground">
+            Upload two documents and our AI will highlight the differences.
+            </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4 px-4 md:px-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -239,7 +244,7 @@ export default function PdfComparer() {
                 <Textarea
                   value={comparison || ""}
                   readOnly
-                  className="h-64 resize-none bg-secondary/50 focus-visible:ring-primary/50"
+                  className="h-64 resize-none rounded-md border border-border bg-muted/30 focus-visible:ring-primary/50"
                   aria-label="PDF Comparison Result"
                 />
             )}
