@@ -34,14 +34,16 @@ export async function comparePdfs(input: ComparePdfsInput): Promise<ComparePdfsO
     if (!process.env.GOOGLE_API_KEY) {
       throw new Error('The GOOGLE_API_KEY is not set. Please add it to your .env file.');
     }
+    
     const result = await comparePdfsFlow(input);
-    if (!result.comparison) {
-      throw new Error('The AI model returned an empty comparison. The documents might be incompatible.');
+    
+    if (!result?.comparison) {
+      throw new Error('The AI model returned an empty or invalid comparison. The documents might be incompatible or unreadable.');
     }
+    
     return result;
   } catch (e: any) {
     console.error('Error in comparePdfs server action:', e);
-    // Re-throw the error with a clear message for the client.
     throw new Error(`An error occurred during comparison: ${e.message}`);
   }
 }
@@ -67,9 +69,6 @@ const comparePdfsFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    if (!output) {
-      throw new Error("The AI model did not return a valid comparison. The PDFs may be unreadable, empty, or incompatible.");
-    }
-    return output;
+    return output!;
   }
 );
