@@ -67,25 +67,16 @@ export default function PdfSplitter() {
     setIsLoading(true);
     setSplitPdfZipUri(null);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const result = await splitPdf(formData);
-
-      if (result.error) {
-        toast({
-          title: 'Split Failed',
-          description: result.error,
-          variant: 'destructive',
-        });
-      } else if (result.data) {
-        setSplitPdfZipUri(result.data);
-        toast({
-          title: 'Split Successful',
-          description: 'Your PDF has been split into individual pages.',
-        });
-      }
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const dataUri = await splitPdf(formData);
+      setSplitPdfZipUri(dataUri);
+      toast({
+        title: 'Split Successful',
+        description: 'Your PDF has been split into individual pages.',
+      });
     } catch (e: any) {
       console.error(e);
       toast({

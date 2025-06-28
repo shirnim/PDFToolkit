@@ -83,28 +83,27 @@ export default function PdfMerger() {
     setIsLoading(true);
     setMergedPdfUri(null);
 
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
-
-    const result = await mergePdfs(formData);
-
-    if (result.error) {
-      toast({
-        title: 'Merge Failed',
-        description: result.error,
-        variant: 'destructive',
+    try {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('files', file);
       });
-    } else if (result.data) {
-      setMergedPdfUri(result.data);
+
+      const dataUri = await mergePdfs(formData);
+      setMergedPdfUri(dataUri);
       toast({
         title: 'Merge Successful',
         description: 'Your PDFs have been merged.',
       });
+    } catch (error: any) {
+      toast({
+        title: 'Merge Failed',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const triggerFileSelect = () => !isLoading && fileInputRef.current?.click();

@@ -2,12 +2,10 @@
 
 import { PDFDocument } from 'pdf-lib';
 
-export async function mergePdfs(
-  formData: FormData
-): Promise<{ data?: string; error?: string }> {
+export async function mergePdfs(formData: FormData): Promise<string> {
   const files = formData.getAll('files') as File[];
   if (!files || files.length === 0) {
-    return { error: 'No files uploaded.' };
+    throw new Error('No files uploaded.');
   }
 
   try {
@@ -25,7 +23,9 @@ export async function mergePdfs(
       } catch (innerError: any) {
         console.error(`Failed to process file: ${file.name}`, innerError);
         // Re-throwing a more user-friendly error to be caught by the outer catch block.
-        throw new Error(`The file "${file.name}" could not be processed. It might be corrupted, password-protected, or an unsupported format.`);
+        throw new Error(
+          `The file "${file.name}" could not be processed. It might be corrupted, password-protected, or an unsupported format.`
+        );
       }
     }
 
@@ -34,10 +34,12 @@ export async function mergePdfs(
       mergedPdfBytes
     ).toString('base64')}`;
 
-    return { data: mergedPdfDataUri };
+    return mergedPdfDataUri;
   } catch (e: any) {
     console.error('PDF merge failed:', e);
-    // This will now catch the user-friendly error from the inner block, or any other error.
-    return { error: e.message || 'An unexpected error occurred while merging the PDFs.' };
+    // Re-throw the error to be handled by the client
+    throw new Error(
+      e.message || 'An unexpected error occurred while merging the PDFs.'
+    );
   }
 }
