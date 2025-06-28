@@ -4,6 +4,7 @@ import { FileText, GitCompareArrows, Combine, Scissors, Info } from "lucide-reac
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import AdBanner from "@/components/ad-banner";
 
 export default function Home() {
   const isAiConfigured = !!process.env.GOOGLE_API_KEY;
@@ -103,6 +104,7 @@ export default function Home() {
                       );
                     })}
                 </div>
+                <AdBanner data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true" />
             </div>
         </section>
         <footer className="py-8 text-center text-sm text-muted-foreground">
