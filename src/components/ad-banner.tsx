@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import Script from 'next/script';
 import { cn } from '@/lib/utils';
-import { Card } from './ui/card';
 
 declare global {
   interface Window {
@@ -19,7 +18,7 @@ type AdBannerProps = {
 };
 
 const AdBanner = ({ className, ...props }: AdBannerProps) => {
-  const adSenseId = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID;
+  const adSenseId = "ca-pub-8477550300312829";
 
   useEffect(() => {
     try {
@@ -29,19 +28,14 @@ const AdBanner = ({ className, ...props }: AdBannerProps) => {
     }
   }, []);
 
-  if (!adSenseId || adSenseId === 'ca-pub-xxxxxxxxxxxxxxxx' || !props['data-ad-slot']) {
-    return (
-        <div className={cn('flex justify-center my-8', className)}>
-          <Card className="flex items-center justify-center w-full max-w-4xl h-24 bg-muted/30">
-            <p className="text-muted-foreground">Advertisement Area</p>
-          </Card>
-        </div>
-      );
+  if (!props['data-ad-slot']) {
+    return null;
   }
 
   return (
     <div className={cn('my-8 w-full text-center', className)}>
         <Script
+            id={`adsbygoogle-script-${props['data-ad-slot']}`}
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseId}`}
             crossOrigin="anonymous"
