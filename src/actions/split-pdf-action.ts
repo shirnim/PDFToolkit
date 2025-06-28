@@ -1,3 +1,4 @@
+
 'use server';
 
 import { PDFDocument } from 'pdf-lib';
@@ -12,6 +13,10 @@ export async function splitPdf(formData: FormData): Promise<SplitResult> {
   const file = formData.get('file') as File;
   if (!file) {
     return { success: false, error: 'No file uploaded.' };
+  }
+
+  if (file.type !== 'application/pdf') {
+    return { success: false, error: `Invalid file type for "${file.name}". Only PDF files can be split.` };
   }
 
   try {
