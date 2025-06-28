@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { comparePdfs } from "@/ai/flows/compare-pdfs";
+import { comparePdfs } from "@/actions/compare-pdfs-action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, Copy, X, Loader2, GitCompareArrows } from "lucide-react";
+import { Upload, FileText, Copy, X, Loader2, GitCompareArrows, Terminal } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function FileUploader({
   file,
@@ -79,12 +80,39 @@ function FileUploader({
 }
 
 
-export default function PdfComparer() {
+export default function PdfComparer({ isAiConfigured = true }: { isAiConfigured?: boolean }) {
   const [comparison, setComparison] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [file1, setFile1] = useState<File | null>(null);
   const [file2, setFile2] = useState<File | null>(null);
   const { toast } = useToast();
+
+  if (!isAiConfigured) {
+    return (
+        <Card className="w-full rounded-xl shadow-xl">
+            <CardHeader className="items-center space-y-4 text-center">
+                <div className="rounded-full bg-primary/10 p-4 text-primary">
+                    <GitCompareArrows className="h-8 w-8" />
+                </div>
+                <div className="space-y-1">
+                    <CardTitle className="text-3xl font-bold tracking-tight">Compare Two PDFs</CardTitle>
+                    <CardDescription className="pt-1 text-md text-muted-foreground">
+                    This AI-powered feature is not configured.
+                    </CardDescription>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <Alert variant="destructive">
+                    <Terminal className="h-4 w-4" />
+                    <AlertTitle>Configuration Required</AlertTitle>
+                    <AlertDescription>
+                      To enable this feature, please set your <code className="font-mono rounded bg-muted px-1.5 py-1 font-semibold">GOOGLE_API_KEY</code> in the <code className="font-mono rounded bg-muted px-1.5 py-1 font-semibold">.env</code> file at the root of your project.
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+        </Card>
+    );
+  }
 
   const handleFileChange = (fileNumber: 1 | 2) => (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];

@@ -10,12 +10,6 @@ export async function summarizePdf(
   input: SummarizePdfInput
 ): Promise<SummarizePdfOutput> {
   try {
-    if (!process.env.GOOGLE_API_KEY) {
-      throw new Error(
-        'The GOOGLE_API_KEY is not set. Please add it to your .env file.'
-      );
-    }
-
     const result = await summarizePdfFlow(input);
 
     if (!result?.summary) {

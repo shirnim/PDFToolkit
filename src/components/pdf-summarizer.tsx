@@ -1,20 +1,48 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { summarizePdf } from "@/ai/flows/summarize-pdf";
+import { summarizePdf } from "@/actions/summarize-pdf-action";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, Copy, X, Loader2, Wand2 } from "lucide-react";
+import { Upload, FileText, Copy, X, Loader2, Wand2, Terminal } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default function PdfSummarizer() {
+export default function PdfSummarizer({ isAiConfigured = true }: { isAiConfigured?: boolean }) {
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  if (!isAiConfigured) {
+    return (
+      <Card className="w-full max-w-2xl shadow-xl rounded-xl">
+        <CardHeader className="items-center space-y-4 text-center">
+          <div className="rounded-full bg-primary/10 p-4 text-primary">
+              <Wand2 className="h-8 w-8" />
+          </div>
+          <div className="space-y-1">
+              <CardTitle className="text-3xl font-bold tracking-tight">Summarize your PDF</CardTitle>
+              <CardDescription className="text-md text-muted-foreground pt-1">
+                This AI-powered feature is not configured.
+              </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Configuration Required</AlertTitle>
+            <AlertDescription>
+              To enable this feature, please set your <code className="font-mono rounded bg-muted px-1.5 py-1 font-semibold">GOOGLE_API_KEY</code> in the <code className="font-mono rounded bg-muted px-1.5 py-1 font-semibold">.env</code> file at the root of your project.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
