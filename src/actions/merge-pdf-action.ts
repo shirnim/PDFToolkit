@@ -1,3 +1,4 @@
+
 'use server';
 
 import { PDFDocument } from 'pdf-lib';
@@ -12,10 +13,10 @@ export async function mergePdfs(formData: FormData): Promise<MergeResult> {
     return { success: false, error: 'No files uploaded.' };
   }
 
-  const mergedPdf = await PDFDocument.create();
   let currentFileName = '';
 
   try {
+    const mergedPdf = await PDFDocument.create();
     for (const file of files) {
       currentFileName = file.name;
       const pdfBytes = await file.arrayBuffer();
