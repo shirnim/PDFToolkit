@@ -51,6 +51,7 @@ export default function Home() {
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             Everything you need to work with your PDFs. Simple, fast, and intuitive.
           </p>
+          <AdBanner data-ad-slot="1234567895" data-ad-format="auto" data-full-width-responsive="true" />
         </section>
         <section className="bg-muted/30 py-12 md:py-24">
             <div className="container mx-auto max-w-5xl px-4 md:px-6">
