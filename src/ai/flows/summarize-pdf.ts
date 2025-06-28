@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'summarizePdfPrompt',
   input: {schema: SummarizePdfInputSchema},
   output: {schema: SummarizePdfOutputSchema},
-  model: 'gemini-1.5-flash',
+  model: 'gemini-1.5-flash-latest',
   prompt: `You are an expert summarizer, skilled at condensing large documents into concise summaries.
 
   Please summarize the following PDF document, extracting the key points and main ideas.
