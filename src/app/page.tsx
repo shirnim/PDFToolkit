@@ -44,7 +44,7 @@ export default function Home() {
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1">
-        <section className="container mx-auto px-4 py-24 text-center sm:py-32 md:px-6">
+        <section className="container mx-auto px-4 py-12 text-center sm:py-16 md:px-6">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
             The Ultimate PDF Toolkit
           </h1>
@@ -53,7 +53,7 @@ export default function Home() {
           </p>
           <AdBanner data-ad-slot="1234567895" data-ad-format="auto" data-full-width-responsive="true" />
         </section>
-        <section className="bg-muted/30 py-12 md:py-24">
+        <section className="bg-muted/30 py-8 md:py-12">
             <div className="container mx-auto max-w-5xl px-4 md:px-6">
               {!isAiConfigured && (
                 <Alert variant="destructive" className="mb-8 bg-yellow-50 border-yellow-200 text-yellow-800 [&>svg]:text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-800/50 dark:text-yellow-300 dark:[&>svg]:text-yellow-300">
