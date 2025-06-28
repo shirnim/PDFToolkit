@@ -2,10 +2,14 @@
 
 import { PDFDocument } from 'pdf-lib';
 
-export async function mergePdfs(formData: FormData): Promise<string> {
+type MergeResult = 
+  | { success: true; data: string }
+  | { success: false; error: string };
+
+export async function mergePdfs(formData: FormData): Promise<MergeResult> {
   const files = formData.getAll('files') as File[];
   if (!files || files.length === 0) {
-    throw new Error('No files uploaded.');
+    return { success: false, error: 'No files uploaded.' };
   }
 
   const mergedPdf = await PDFDocument.create();
@@ -28,10 +32,10 @@ export async function mergePdfs(formData: FormData): Promise<string> {
       mergedPdfBytes
     ).toString('base64')}`;
 
-    return mergedPdfDataUri;
+    return { success: true, data: mergedPdfDataUri };
   } catch (e: any) {
     console.error(`PDF merge failed on file: ${currentFileName}`, e);
     const errorMessage = `Failed to process the file "${currentFileName}". It may be corrupted, password-protected, or an unsupported format.`;
-    throw new Error(errorMessage);
+    return { success: false, error: errorMessage };
   }
 }

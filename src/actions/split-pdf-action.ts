@@ -3,10 +3,15 @@
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
 
-export async function splitPdf(formData: FormData): Promise<string> {
+type SplitResult = 
+  | { success: true; data: string }
+  | { success: false; error: string };
+
+
+export async function splitPdf(formData: FormData): Promise<SplitResult> {
   const file = formData.get('file') as File;
   if (!file) {
-    throw new Error('No file uploaded.');
+    return { success: false, error: 'No file uploaded.' };
   }
 
   try {
@@ -15,7 +20,7 @@ export async function splitPdf(formData: FormData): Promise<string> {
     const pageCount = pdfDoc.getPageCount();
 
     if (pageCount <= 1) {
-      throw new Error('PDF has only one page, so it cannot be split.');
+      return { success: false, error: 'PDF has only one page, so it cannot be split.' };
     }
 
     const zip = new JSZip();
@@ -35,10 +40,10 @@ export async function splitPdf(formData: FormData): Promise<string> {
       zipBytes
     ).toString('base64')}`;
 
-    return zipDataUri;
+    return { success: true, data: zipDataUri };
   } catch (e: any) {
     console.error(`PDF split failed for file: ${file.name}`, e);
     const errorMessage = `Failed to split the PDF "${file.name}". The file may be corrupted, password-protected, or in an unsupported format.`;
-    throw new Error(errorMessage);
+    return { success: false, error: errorMessage };
   }
 }
