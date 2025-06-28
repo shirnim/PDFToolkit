@@ -2,7 +2,7 @@
 
 import { PDFDocument } from 'pdf-lib';
 
-export async function mergePdfsAction(
+export async function mergePdfs(
   formData: FormData
 ): Promise<{ data?: string; error?: string }> {
   const files = formData.getAll('files') as File[];

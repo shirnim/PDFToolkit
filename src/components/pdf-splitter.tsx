@@ -18,7 +18,7 @@ import {
   Scissors,
   FileArchive,
 } from 'lucide-react';
-import { splitPdf } from '@/ai/flows/split-pdf';
+import { splitPdf } from '@/actions/split-pdf-action';
 
 export default function PdfSplitter() {
   const [file, setFile] = useState<File | null>(null);

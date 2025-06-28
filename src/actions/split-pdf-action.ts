@@ -3,7 +3,7 @@
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
 
-export async function splitPdfAction(
+export async function splitPdf(
   formData: FormData
 ): Promise<{ data?: string; error?: string }> {
   const file = formData.get('file') as File;
