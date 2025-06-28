@@ -32,30 +32,45 @@ export default function PdfMerger() {
     const selectedFiles = Array.from(event.target.files || []);
     if (selectedFiles.length === 0) return;
 
-    const newFiles = selectedFiles.filter((file) => {
+    const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB server limit
+
+    const currentTotalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const allowedNewFiles: File[] = [];
+    let newFilesSize = 0;
+
+    for (const file of selectedFiles) {
       if (file.type !== 'application/pdf') {
         toast({
           title: 'Invalid File Type',
           description: `${file.name} is not a valid PDF file.`,
           variant: 'destructive',
         });
-        return false;
+        continue;
       }
-      if (file.size > 25 * 1024 * 1024) {
-        // 25MB limit per file
+      
+      if (currentTotalSize + newFilesSize + file.size > MAX_TOTAL_SIZE) {
         toast({
-          title: 'File Too Large',
-          description: `${file.name} is larger than 25MB.`,
+          title: 'Total Size Limit Exceeded',
+          description: `Adding more files would exceed the 25MB total upload limit. Not all files were added.`,
           variant: 'destructive',
         });
-        return false;
+        break; 
       }
-      return true;
-    });
+      
+      allowedNewFiles.push(file);
+      newFilesSize += file.size;
+    }
+    
+    if (allowedNewFiles.length > 0) {
+      setFiles((prevFiles) => [...prevFiles, ...allowedNewFiles]);
+      setMergedPdfUri(null);
+    }
 
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    setMergedPdfUri(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
+
 
   const handleRemoveFile = (index: number) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -142,7 +157,7 @@ export default function PdfMerger() {
             <p className="mt-4 font-semibold text-foreground">
               Click to upload or <span className="text-primary">drag and drop</span>
             </p>
-            <p className="text-sm">PDFs only, up to 25MB each</p>
+            <p className="text-sm">PDFs only, up to 25MB total</p>
           </div>
         </div>
 
