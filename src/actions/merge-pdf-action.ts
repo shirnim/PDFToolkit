@@ -1,16 +1,11 @@
-
 'use server';
 
 import { PDFDocument } from 'pdf-lib';
 
-type MergeResult = 
-  | { success: true; data: string }
-  | { success: false; error: string };
-
-export async function mergePdfs(formData: FormData): Promise<MergeResult> {
+export async function mergePdfs(formData: FormData): Promise<string> {
   const files = formData.getAll('files') as File[];
-  if (!files || files.length === 0) {
-    return { success: false, error: 'No files uploaded.' };
+  if (!files || files.length < 2) {
+    throw new Error('Please upload at least two PDF files to merge.');
   }
 
   let currentFileName = '';
@@ -19,6 +14,11 @@ export async function mergePdfs(formData: FormData): Promise<MergeResult> {
     const mergedPdf = await PDFDocument.create();
     for (const file of files) {
       currentFileName = file.name;
+
+      if (file.type !== 'application/pdf') {
+        throw new Error(`Invalid file type for "${file.name}". Only PDF files can be merged.`);
+      }
+
       const pdfBytes = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(pdfBytes);
       const copiedPages = await mergedPdf.copyPages(
@@ -33,10 +33,9 @@ export async function mergePdfs(formData: FormData): Promise<MergeResult> {
       mergedPdfBytes
     ).toString('base64')}`;
 
-    return { success: true, data: mergedPdfDataUri };
+    return mergedPdfDataUri;
   } catch (e: any) {
     console.error(`PDF merge failed on file: ${currentFileName}`, e);
-    const errorMessage = `Failed to process the file "${currentFileName}". It may be corrupted, password-protected, or an unsupported format.`;
-    return { success: false, error: errorMessage };
+    throw new Error(`Failed to process the file "${currentFileName}". It may be corrupted, password-protected, or an unsupported format.`);
   }
 }

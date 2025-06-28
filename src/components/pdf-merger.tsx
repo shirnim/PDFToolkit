@@ -104,25 +104,17 @@ export default function PdfMerger() {
         formData.append('files', file);
       });
 
-      const result = await mergePdfs(formData);
+      const resultDataUri = await mergePdfs(formData);
       
-      if (result.success) {
-        setMergedPdfUri(result.data);
-        toast({
-          title: 'Merge Successful',
-          description: 'Your PDFs have been merged.',
-        });
-      } else {
-        toast({
-          title: 'Merge Failed',
-          description: result.error,
-          variant: 'destructive',
-        });
-      }
+      setMergedPdfUri(resultDataUri);
+      toast({
+        title: 'Merge Successful',
+        description: 'Your PDFs have been merged.',
+      });
     } catch (error: any) {
       toast({
         title: 'Merge Failed',
-        description: 'An unexpected client-side error occurred.',
+        description: error.message || 'An unexpected error occurred.',
         variant: 'destructive',
       });
     } finally {
