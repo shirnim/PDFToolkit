@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview Genkit flow and server action for PDF summarization.
+ * @fileOverview Genkit flow for PDF summarization.
  *
- * - summarizePdf - A server action that summarizes a PDF.
+ * - summarizePdfFlow - A Genkit flow that summarizes a PDF.
  * - SummarizePdfInput - The input type for the flow.
  * - SummarizePdfOutput - The return type for the flow.
  */
@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   PDF Document: {{media url=pdfDataUri}}`,
 });
 
-const summarizePdfFlow = ai.defineFlow(
+export const summarizePdfFlow = ai.defineFlow(
   {
     name: 'summarizePdfFlow',
     inputSchema: SummarizePdfInputSchema,
@@ -45,31 +45,9 @@ const summarizePdfFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+    if (!output?.summary) {
+        throw new Error('The AI model returned an empty or invalid summary. The document might be incompatible or unreadable.');
+    }
+    return output;
   }
 );
-
-export async function summarizePdf(
-  input: SummarizePdfInput
-): Promise<SummarizePdfOutput> {
-  try {
-    if (!process.env.GOOGLE_API_KEY) {
-      throw new Error(
-        'The GOOGLE_API_KEY is not set. Please add it to your .env file.'
-      );
-    }
-
-    const result = await summarizePdfFlow(input);
-
-    if (!result?.summary) {
-      throw new Error(
-        'The AI model returned an empty or invalid summary. The document might be incompatible or unreadable.'
-      );
-    }
-
-    return result;
-  } catch (e: any) {
-    console.error('Error in summarizePdf server action:', e);
-    throw new Error(`An error occurred during summarization: ${e.message}`);
-  }
-}

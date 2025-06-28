@@ -10,16 +10,15 @@ export async function summarizePdf(
   input: SummarizePdfInput
 ): Promise<SummarizePdfOutput> {
   try {
-    const result = await summarizePdfFlow(input);
-
-    if (!result?.summary) {
+    if (!process.env.GOOGLE_API_KEY) {
       throw new Error(
-        'The AI model returned an empty or invalid summary. The document might be incompatible or unreadable.'
+        'The GOOGLE_API_KEY is not set. Please add it to your .env file.'
       );
     }
-
+    const result = await summarizePdfFlow(input);
     return result;
-  } catch (e: any) {
+  } catch (e: any)
+  {
     console.error('Error in summarizePdf server action:', e);
     // Re-throw the error to be caught by the client-side caller
     throw new Error(`An error occurred during summarization: ${e.message}`);
