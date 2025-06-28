@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Script from 'next/script';
 import { cn } from '@/lib/utils';
 
 declare global {
@@ -34,13 +33,6 @@ const AdBanner = ({ className, ...props }: AdBannerProps) => {
 
   return (
     <div className={cn('my-8 w-full text-center', className)}>
-        <Script
-            id={`adsbygoogle-script-${props['data-ad-slot']}`}
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseId}`}
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-        />
         <ins
             className="adsbygoogle"
             style={{ display: 'block' }}
