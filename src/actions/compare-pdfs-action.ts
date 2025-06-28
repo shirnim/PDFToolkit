@@ -19,6 +19,12 @@ export async function comparePdfs(
     return result;
   } catch (e: any) {
     console.error('Error in comparePdfs server action:', e);
+    if (e.message?.includes('503') || e.message?.includes('overloaded')) {
+      throw new Error('The AI model is temporarily overloaded. Please try again in a moment.');
+    }
+    if (e.message?.includes('429') || e.message?.includes('quota')) {
+      throw new Error('You have exceeded the free usage quota for the AI model. Please try again later.');
+    }
     throw new Error(`An error occurred during comparison: ${e.message}`);
   }
 }

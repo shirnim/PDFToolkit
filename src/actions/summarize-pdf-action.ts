@@ -17,10 +17,14 @@ export async function summarizePdf(
     }
     const result = await summarizePdfFlow(input);
     return result;
-  } catch (e: any)
-  {
+  } catch (e: any) {
     console.error('Error in summarizePdf server action:', e);
-    // Re-throw the error to be caught by the client-side caller
+    if (e.message?.includes('503') || e.message?.includes('overloaded')) {
+      throw new Error('The AI model is temporarily overloaded. Please try again in a moment.');
+    }
+    if (e.message?.includes('429') || e.message?.includes('quota')) {
+      throw new Error('You have exceeded the free usage quota for the AI model. Please try again later.');
+    }
     throw new Error(`An error occurred during summarization: ${e.message}`);
   }
 }
