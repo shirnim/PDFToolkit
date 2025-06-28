@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'comparePdfsPrompt',
   input: {schema: ComparePdfsInputSchema},
   output: {schema: ComparePdfsOutputSchema},
-  model: 'googleai/gemini-1.5-pro-latest',
+  model: 'googleai/gemini-pro-vision',
   prompt: `You are an expert document analyst. You are skilled at comparing documents and identifying differences.
 
   Please compare the two following PDF documents and provide a detailed analysis of their differences. If the documents are identical, state that.
