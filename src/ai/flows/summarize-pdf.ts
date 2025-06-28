@@ -8,6 +8,7 @@
  * - SummarizePdfOutput - The return type for the flow.
  */
 
+import { PDFDocument } from 'pdf-lib';
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
@@ -44,10 +45,31 @@ export const summarizePdfFlow = ai.defineFlow(
     outputSchema: SummarizePdfOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    if (!output?.summary) {
-        throw new Error('The AI model returned an empty or invalid summary. The document might be incompatible or unreadable.');
+    const { pdfDataUri } = input;
+
+    const pdfDoc = await PDFDocument.load(pdfDataUri);
+    const numPages = pdfDoc.getPages().length;
+
+    const pageSummaries: string[] = [];
+
+    for (let i = 0; i < numPages; i++) {
+      const newPdfDoc = await PDFDocument.create();
+      const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+      newPdfDoc.addPage(copiedPage);
+
+      const singlePagePdfDataUri = await newPdfDoc.saveAsBase64({ dataUri: true });
+
+      const { output } = await prompt({ pdfDataUri: singlePagePdfDataUri });
+      if (output?.summary) {
+        pageSummaries.push(output.summary);
+      } else {
+        // Handle cases where a page summary is empty or invalid
+        console.warn(`Could not summarize page ${i + 1}`);
+      }
     }
-    return output;
+
+    const combinedSummary = pageSummaries.join('\\n'); // Join with newline
+
+    return { summary: combinedSummary };
   }
 );
