@@ -8,25 +8,19 @@ export async function mergePdfs(formData: FormData): Promise<string> {
     throw new Error('No files uploaded.');
   }
 
-  try {
-    const mergedPdf = await PDFDocument.create();
+  const mergedPdf = await PDFDocument.create();
+  let currentFileName = '';
 
+  try {
     for (const file of files) {
-      try {
-        const pdfBytes = await file.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-        const copiedPages = await mergedPdf.copyPages(
-          pdfDoc,
-          pdfDoc.getPageIndices()
-        );
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
-      } catch (innerError: any) {
-        console.error(`Failed to process file: ${file.name}`, innerError);
-        // Re-throwing a more user-friendly error to be caught by the outer catch block.
-        throw new Error(
-          `The file "${file.name}" could not be processed. It might be corrupted, password-protected, or an unsupported format.`
-        );
-      }
+      currentFileName = file.name;
+      const pdfBytes = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+      const copiedPages = await mergedPdf.copyPages(
+        pdfDoc,
+        pdfDoc.getPageIndices()
+      );
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
     }
 
     const mergedPdfBytes = await mergedPdf.save();
@@ -36,10 +30,8 @@ export async function mergePdfs(formData: FormData): Promise<string> {
 
     return mergedPdfDataUri;
   } catch (e: any) {
-    console.error('PDF merge failed:', e);
-    // Re-throw the error to be handled by the client
-    throw new Error(
-      e.message || 'An unexpected error occurred while merging the PDFs.'
-    );
+    console.error(`PDF merge failed on file: ${currentFileName}`, e);
+    const errorMessage = `Failed to process the file "${currentFileName}". It may be corrupted, password-protected, or an unsupported format.`;
+    throw new Error(errorMessage);
   }
 }

@@ -15,7 +15,7 @@ export async function splitPdf(formData: FormData): Promise<string> {
     const pageCount = pdfDoc.getPageCount();
 
     if (pageCount <= 1) {
-      throw new Error('PDF has only one page, no splitting needed.');
+      throw new Error('PDF has only one page, so it cannot be split.');
     }
 
     const zip = new JSZip();
@@ -37,11 +37,8 @@ export async function splitPdf(formData: FormData): Promise<string> {
 
     return zipDataUri;
   } catch (e: any) {
-    console.error('PDF split failed:', e);
-    // Re-throw the error to be handled by the client
-    throw new Error(
-      e.message ||
-        'Failed to split PDF. The file might be corrupted or password-protected.'
-    );
+    console.error(`PDF split failed for file: ${file.name}`, e);
+    const errorMessage = `Failed to split the PDF "${file.name}". The file may be corrupted, password-protected, or in an unsupported format.`;
+    throw new Error(errorMessage);
   }
 }
