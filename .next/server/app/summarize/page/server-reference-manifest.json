@@ -1,0 +1,16 @@
+{
+  "node": {
+    "407c705bca9ea3a8de2d0896cd279d089ddf4abb80": {
+      "workers": {
+        "app/summarize/page": {
+          "moduleId": "[project]/.next-internal/server/app/summarize/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/summarize-pdf-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/summarize/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}

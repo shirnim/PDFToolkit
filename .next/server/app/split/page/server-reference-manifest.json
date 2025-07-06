@@ -1,0 +1,16 @@
+{
+  "node": {
+    "40063ccaded898d55a05c6190028ceee9736e7d0f7": {
+      "workers": {
+        "app/split/page": {
+          "moduleId": "[project]/.next-internal/server/app/split/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/split-pdf-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/split/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 31, "column": 0}, "map": {"version":3,"sources":["file:///E:/AppDevelopment/PDFToolkit/src/components/header.tsx"],"sourcesContent":["'use client';\r\n\r\nimport Link from 'next/link';\r\nimport { Files } from 'lucide-react';\r\n\r\nexport default function Header() {\r\n  return (\r\n    <header className=\"sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60\">\r\n      <div className=\"flex h-16 items-center justify-between px-6\">\r\n        <Link href=\"/\" className=\"flex items-center gap-2 font-semibold\">\r\n          <Files className=\"h-6 w-6 text-primary\" />\r\n          <span className=\"text-lg font-bold\">PDF Toolkit</span>\r\n        </Link>\r\n      </div>\r\n    </header>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACtB,qBACE,8OAAC;QAAO,WAAU;kBAChB,cAAA,8OAAC;YAAI,WAAU;sBACb,cAAA,8OAAC,4JAAA,CAAA,UAAI;gBAAC,MAAK;gBAAI,WAAU;;kCACvB,8OAAC,oMAAA,CAAA,QAAK;wBAAC,WAAU;;;;;;kCACjB,8OAAC;wBAAK,WAAU;kCAAoB;;;;;;;;;;;;;;;;;;;;;;AAK9C","debugId":null}}]
+}
